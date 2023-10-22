@@ -67,9 +67,16 @@ parser.validate(openApiDocument, (err, api) => {
 
     //Crie um objeto Joi para validar as respostas
     const responseValidation = {};
-    for (const schema in api.components.schemas) {
-      console.log(schema);
+    const propertiesObject = api.components.schemas;
+    for (const schemaName in propertiesObject) {
+      if (propertiesObject[schemaName].properties) {
+        const properties = propertiesObject[schemaName].properties;
+  
+        console.log(`Properties para o esquema "${schemaName}":`);
+        console.log(JSON.stringify(properties));
+      }
     }
+  
     // const schemas = api.components.schemas
     // const myJson = JSON.stringify(schemas);
     // console.log(myJson)
