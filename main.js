@@ -1,8 +1,15 @@
-const parser = require('swagger-parser');
-const Joi = require('joi');
+import parser from 'swagger-parser';
+import  Joi from 'joi';
+import OpenAI from 'openai';
+import 'dotenv/config'
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 // Carregue o documento OpenAPI (Swagger)
 const openApiDocument = './swagger.json';
+
 
 parser.validate(openApiDocument, (err, api) => {
   if (err) {
@@ -66,14 +73,27 @@ parser.validate(openApiDocument, (err, api) => {
     // console.log(endpointValidations);
 
     //Crie um objeto Joi para validar as respostas
-    const responseValidation = {};
+    let schemasToValidate = {};
     const propertiesObject = api.components.schemas;
     for (const schemaName in propertiesObject) {
       if (propertiesObject[schemaName].properties) {
-        const properties = propertiesObject[schemaName].properties;
-  
+        const propertie = propertiesObject[schemaName].properties;
         console.log(`Properties para o esquema "${schemaName}":`);
-        console.log(JSON.stringify(properties));
+        console.log(JSON.stringify(propertie));
+        
+        const message = `
+          based on the JSON below, return only the code, without explanations,
+          with a const with the name schema with the validations using the JoiJS library,
+          also validate the character limits and the mandatory nature of the fields.
+          ${JSON.stringify(propertie)}
+        `;
+        
+        const completion = openai.chat.completions.create({
+          model: 'gpt-3.5-turbo-instruct',
+          prompt: message
+      });
+
+      console.log(completion);
       }
     }
   
