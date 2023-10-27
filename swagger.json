@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Credz API de Eventos",
+    "title": "API de Eventos",
     "description": "API de Eventos",
     "version": "v1"
   },
